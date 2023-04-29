@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ro.unibuc.hello.dto.Greeting;
 import ro.unibuc.hello.exception.EntityNotFoundException;
 import ro.unibuc.hello.service.HelloWorldService;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
 public class HelloWorldController {
@@ -23,14 +22,11 @@ public class HelloWorldController {
     @Autowired
     MeterRegistry metricsRegistry;
 
-    private final AtomicLong counter = new AtomicLong();
-
     @GetMapping("/hello-world")
     @ResponseBody
     @Timed(value = "hello.greeting.time", description = "Time taken to return greeting")
     @Counted(value = "hello.greeting.count", description = "Times greeting was returned")
     public Greeting sayHello(@RequestParam(name="name", required=false, defaultValue="Stranger") String name) {
-        metricsRegistry.counter("my_non_aop_metric", "endpoint", "hello").increment(counter.incrementAndGet());
         return helloWorldService.hello(name);
     }
 
