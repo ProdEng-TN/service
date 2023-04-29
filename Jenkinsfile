@@ -21,6 +21,8 @@ pipeline {
                    env.IMAGE_TAG = "${env.MAJOR_VERSION}.\$((${env.MINOR_VERSION} + 1)).${env.PATCH_VERSION}"
                 }
                 sh "docker build -t alex230/hello-img:${MAJOR_VERSION}.\$((${MINOR_VERSION} + 1)).${PATCH_VERSION} ."
+                sh "docker login docker.io -u alex230 -p $DOCKER_PASSWORD"
+                sh "docker push alex230/hello-img:${MAJOR_VERSION}.\$((${MINOR_VERSION} + 1)).${PATCH_VERSION}"
                 sh "git tag ${env.IMAGE_TAG}"
                 sh "git push https://$GITHUB_TOKEN@github.com/ProdEng-TN/service.git ${env.IMAGE_TAG}"
               }
@@ -32,7 +34,7 @@ pipeline {
         }
         stage('Integration Test') {
             steps {
-                sh './gradlew testE2E'
+                sh './gradlew test'
             }
         }
     }
